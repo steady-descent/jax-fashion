@@ -17,9 +17,11 @@ pip install -r requirements.txt
 # Strategy
 1. Select a subset of train data to be labeled at initialization
    1. Baseline: random sampling, n=100
+   2. v1: Clustering & choosing centroids?
 2. Train classifier on labeled subset
 3. Predict on remaining points in train data
 4. Predict on held-out test set 
 5. Choose unlabeled points which are added to labeled subset
    1. Baseline: random sampling, n=50
+   2. v1: use a scoring metric to determine which points should be labeled first
 6. Repeat 2 -> 5 until 90% accuracy on held-out test set
