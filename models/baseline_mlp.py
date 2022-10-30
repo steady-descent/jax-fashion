@@ -17,7 +17,7 @@ def init_network_params(sizes, key):
     ]
 
 
-def baseline_nn(
+def baseline_mlp(
     layer_sizes=[784, 512, 512, 10],
 ):
     return init_network_params(layer_sizes, random.PRNGKey(0))
