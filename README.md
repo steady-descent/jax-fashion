@@ -1,4 +1,5 @@
 **Task:** Assume you start with no labeled data. Build a classifier that achieves 90% accuracy on the test set using the smallest number of queries to a simulated human annotator database which contains labeled data.
+
 **Dataset:** [Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist)  
 
 ## Resources
