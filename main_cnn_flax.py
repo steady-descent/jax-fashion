@@ -27,7 +27,10 @@ def compute_metrics(*, logits, labels):
 if __name__ == "__main__":
 
     rng = jax.random.PRNGKey(0)
-    rng, init_rng = jax.random.split(rng)
+    init_rngs = {
+        "params": jax.random.PRNGKey(0),
+        "dropout": jax.random.PRNGKey(1),
+    }
 
     step_size = 0.001
     num_epochs = 8
@@ -36,7 +39,7 @@ if __name__ == "__main__":
 
     # params = baseline_nn()
     cnn = CNN()
-    params = cnn.init(rng, jnp.ones([1, 28, 28, 1]))["params"]
+    params = cnn.init(init_rngs, jnp.ones([1, 28, 28, 1]))["params"]
     fashion_dataset = load_fashion_mnist()
     training_generator = NumpyLoader(
         fashion_dataset, batch_size=batch_size, num_workers=0
@@ -55,7 +58,9 @@ if __name__ == "__main__":
     test_labels = jnp.array(fashion_dataset_test.targets)
 
     # `batched_predict` has the same call signature as `predict`
-    logits = CNN().apply({"params": params}, train_images)
+    logits = CNN().apply(
+        {"params": params}, train_images, rngs={"dropout": jax.random.PRNGKey(2)}
+    )
     print(train_images.shape)
     metrics = compute_metrics(logits=logits, labels=train_labels)
     print("train acc before training", metrics["accuracy"])
@@ -66,7 +71,7 @@ if __name__ == "__main__":
             labels_onehot = jax.nn.one_hot(y, num_classes=10)
 
             def loss_fn(params):
-                logits = CNN().apply({"params": params}, x.reshape(-1, 28, 28, 1))
+                logits = CNN().apply({"params": params}, x.reshape(-1, 28, 28, 1), rngs={"dropout": jax.random.PRNGKey(2)})
                 loss = cross_entropy_loss(logits=logits, labels=y)
                 return loss, logits
 
@@ -76,8 +81,12 @@ if __name__ == "__main__":
 
         epoch_time = time.time() - start_time
 
-        train_results = compute_metrics(logits=CNN().apply({"params": params}, train_images), labels=train_labels)
-        test_results = compute_metrics(logits=CNN().apply({"params": params}, test_images), labels=test_labels)
+        train_results = compute_metrics(
+            logits=CNN().apply({"params": params}, train_images, rngs={"dropout": jax.random.PRNGKey(2)}), labels=train_labels
+        )
+        test_results = compute_metrics(
+            logits=CNN().apply({"params": params}, test_images, rngs={"dropout": jax.random.PRNGKey(2)}), labels=test_labels
+        )
         print("Epoch {} in {:0.2f} sec".format(epoch, epoch_time))
         print("Training set accuracy {}".format(train_results["accuracy"]))
         print("Test set accuracy {}".format(test_results["accuracy"]))
