@@ -1,3 +1,4 @@
+# partially based on https://flax.readthedocs.io/en/latest/getting_started.html
 import time
 import jax.numpy as jnp
 import jax
