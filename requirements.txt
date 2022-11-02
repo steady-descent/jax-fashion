@@ -1,8 +1,9 @@
 jax[cpu]
-jupyter
 tqdm
-black
-flake8
 torch==1.12.0
 torchvision==0.13.0
 numpy
+wandb
+# remove at completion of work
+-r requirements.dev.txt
+-r requirements.test.txt
